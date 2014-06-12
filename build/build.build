@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="CompileProject">
+
+  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/>
+
+  <!-- Specify here, the solution you want to compile-->
+  <ItemGroup>
+    <Solution Include="../source/BuildTest.sln"/>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <Platform>AnyCPU</Platform>
+    <Configuration>Release</Configuration>
+    <DeployDir>$([System.IO.Path]::GetFullPath('.\..\Output'))\</DeployDir>
+    <SolutionDir>$([System.IO.Path]::GetFullPath('.\..\source'))\</SolutionDir>
+  </PropertyGroup>
+
+  <!-- Gets the projects composing the specified solution -->
+  <Target Name="GetProjectsFromSolution">
+    <GetSolutionProjects Solution="%(Solution.Fullpath)">
+      <Output ItemName="ProjectFiles" TaskParameter="Output"/>
+    </GetSolutionProjects>
+
+	<!-- Filter out solution folders and non .csproj items -->
+	<RegexMatch Input="@(ProjectFiles)" Expression=".[\.]csproj$">
+		<Output TaskParameter="Output" ItemName="Projects"/>
+	</RegexMatch>
+  </Target>
+
+  <Target Name="CompileProject" DependsOnTargets="GetProjectsFromSolution">
+    <MSBuild Projects="%(Projects.Fullpath)"
+             Properties="Platform=$(Platform);MvcBuildViews=true;
+             Configuration=$(Configuration);
+             SolutionDir=$(SolutionDir);
+             OutDir=$(DeployDir)\%(Projects.Filename)\"
+             Targets="Build">
+    </MSBuild>
+  </Target>
+
+</Project>
