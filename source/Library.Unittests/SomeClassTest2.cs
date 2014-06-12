@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Library.Unittests
 {
-	public class SomeClassTest
+	public class SomeClassTest2
 	{
 		[Fact]
 		public void WorkingTest()
